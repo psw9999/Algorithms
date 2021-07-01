@@ -18,5 +18,4 @@ def solution(bridge_length, weight, truck_weights):
             bridge_queue.append(0)
 
     time += bridge_length
-
     return time
