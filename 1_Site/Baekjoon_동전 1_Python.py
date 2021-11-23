@@ -7,13 +7,14 @@ for i in range(n) :
     temp = int(input())
     if temp <= 10000 :
         arr.append(temp)
-
+        
+dp[0] = 1
 arr.sort()
 
-for i in range(k+1) :
-    if dp[i] >= 1 :
-        for j in range(n) :
-            dp[i+arr[j]] += dp[i] + 1
+for i in arr:
+    for j in range(1, k + 1):
+        if j - i >= 0:
+            dp[j] += dp[j - i]
 
 for i in range(11) :
     print(dp[i], end=' ')
