@@ -1,4 +1,3 @@
-
 from collections import deque
 
 M,N = map(int,input().split())
@@ -27,15 +26,14 @@ while queue :
             continue
         if graph[dy][dx] == 0 :
             queue.append((dx,dy,cnt+1))
-            graph[dy][dx] = graph[y][x] + 1
-    
+            graph[dy][dx] = 1
+    result = max(result,cnt)
 
 for i in range(N) :
     for j in range(M) :
         if graph[i][j] == 0 :
             result = -1
-            exit(0)
-    result = max(result,max(graph[i]))
+
 print(result)
     
         
