@@ -22,8 +22,9 @@ move_list = list(map(int,input().rstrip().split()))
 for i in move_list :
     mx,my = move[i][0], move[i][1]
 
-    dx = x + mx
-    dy = y + my
+    # x가 세로, y가 가로
+    dx = y + mx
+    dy = x + my
     
     if dx < 0 or dy < 0 or dy >= N or dx >= M :
         continue
@@ -62,6 +63,6 @@ for i in move_list :
         
     print(diceWid[0])
     
-    x,y = dx,dy
+    y,x = dx,dy
 
 
