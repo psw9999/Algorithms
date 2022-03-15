@@ -5,6 +5,7 @@ input = sys.stdin.readline
 
 T = int(input().rstrip())
 result = []
+
 for t in range(T) :
     result.append([])
     str_arr = input().rstrip()
