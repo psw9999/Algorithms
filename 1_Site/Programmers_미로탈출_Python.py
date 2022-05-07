@@ -1,49 +1,79 @@
-from collections import deque
+import heapq
 
-def solution(board):
-    boardSize = len(board)
-    newBoard = [[1 for _ in range(boardSize+2)] for _ in range(boardSize+2)]
-    for i in range(boardSize) :
-        for j in range(boardSize) :
-            newBoard[i+1][j+1] = board[i][j]
-    queue = deque()
-    queue.append([0,1,1,2,1])
-    visited = [{(1,1),(2,1)}]
+def bit_mask(dir, traps_index, node, flag):
+    if flag == 1: # 현재 방향
+        return (1 & (dir >> traps_index[node]))
+    else: # 트랩을 밟아서 다음 상태 변경
+        return dir ^ (1 << traps_index[node])
 
-    while queue :
-        cost, x1, y1, x2, y2 = queue.popleft()
-        # 목적지에 도달
-        if (x1 == (boardSize) and y1 == (boardSize)) or (x2 == (boardSize) and y2 == (boardSize)) :
-            return cost
+def solution(n, start, end, roads, traps):
+    answer = 0
+    MAX = int(1e9)
+    # 비트마스크이므로 2의 제곱만큼 DP 맵 생성 (트랩은 최대 10개이므로 2 ** 10 = 1024)
+    DP = [[MAX for _ in range(n+1)] for _ in range(2**len(traps))]
+    # 트랩의 노드가 몇번 인덱스인지 판별하기 위한 dict 변수
+    trapDict = { node : i  for i,node in enumerate(traps) }
+    queue = []
+    graph = [[] for _ in range(n+1)]
 
-        for t in move(newBoard,x1,y1,x2,y2) :
-            tx1,ty1,tx2,ty2 = t
-            if {(tx1,ty1),(tx2,ty2)} not in visited :
-                queue.append([cost+1,tx1,ty1,tx2,ty2])
-                visited.append({(tx1,ty1),(tx2,ty2)})
+    for road in roads:
+        s, e, cost = road
+        # 0: 정방향
+        graph[s].append([e, cost, 0])
+        # 1: 역방향
+        graph[e].append([s, cost, 1])
 
-def move(newBoard,x1,y1,x2,y2) :
-    move = [(1,0),(0,1),(-1,0),(0,-1)]
-    rotation = [1,-1]
-    temp = []
+    heapq.heappush(queue,(0, start, 0))
+    DP[0][start] = 0
+   
+    while queue:
+        # 노드까지 이동하는데 걸린 시간, 현재 노드, 방향?
+        nowCost, nowNode, nowDir = heapq.heappop(queue)
 
-    # 상하좌우 이동
-    for mx, my in move :
-        dx1,dy1,dx2,dy2 = x1+mx,y1+my,x2+mx,y2+my
-        if newBoard[dy1][dx1] == 0 and newBoard[dy2][dx2] == 0 :
-            temp.append((dx1,dy1,dx2,dy2))
+        if nowNode == end :
+            answer = nowCost
+            break
+            
+        if DP[nowDir][nowNode] < nowCost:
+            continue
+            
+        for nextNode, cost, dir in graph[nowNode]:
+            nextDir = nowDir
+            cur_flag = 0
+            # 현재 노드가 트랩일 때
+            if nowNode in traps :
+                # 다음 노드도 트랩인경우
+                if nextNode in traps:
+                    prev = bit_mask(nowDir, trapDict, nowNode, 1)
+                    nxt = bit_mask(nowDir, trapDict, nextNode, 1)
+                    '''
+                       prev       nxt    result
+                     1(역방향)   1(역방향)  0(정방향)
+                     1(역방향)   0(정방향)  1(역방향)
+                     0(정방향)   1(역방향)  1(역방향)
+                     0(정방향)   0(정방향)  0(정방향)
+                    '''
+                    cur_flag = (prev + nxt) % 2
+                    next_state = bit_mask(state, traps_index, next_node, 2)
+                    
+                # 다음 노드는 트랩이 아닌 경우
+                else:
+                    cur_flag = bit_mask(state, traps_index, cur_node, 1)
+                    
+            # 현재 노드가 트랩이 아닌 경우
+            else:
+                # 다음 노드가 트랩일 때
+                if next_node in traps:
+                    cur_flag = bit_mask(state, traps_index, next_node, 1)
+                    next_state = bit_mask(state, traps_index, next_node, 2)
 
-    # 수평인 경우 수직으로 회전
-    if x1 == x2 :
-        for r in rotation :
-            if newBoard[y1][x1+r] == 0 and newBoard[y2][x2+r] == 0 :
-                temp.append((x1,y1,x1+r,y1))
-                temp.append((x2+r,y2,x2,y2))
-    # 수직인 경우 수평으로 회전
-    else :
-        for r in rotation :
-            if newBoard[y1+r][x1] == 0 and newBoard[y2+r][x2] == 0 :
-                temp.append((x1,y1,x1,y1+r))
-                temp.append((x2,y2+r,x2,y2))
+                # 다음 노드는 트랩이 아닌 경우
+                else:
+                    cur_flag = 0
+                    
+            if cur_flag == flag:
+                if dp[next_state][next_node] > cur_time + cost:
+                    dp[next_state][next_node] = cur_time + cost
+                    heapq.heappush(node_list, (dp[next_state][next_node], next_node, next_state))
 
-    return temp
+    return answer
