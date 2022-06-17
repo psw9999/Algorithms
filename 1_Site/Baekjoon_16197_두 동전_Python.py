@@ -5,16 +5,22 @@ input = sys.stdin.readline
 move = [(1,0),(0,1),(-1,0),(0,-1)]
 N,M = map(int, input().rstrip().split())
 
+visited = [[[[False for _ in range(M)] for _ in range(N)] for _ in range(M)] for _ in range(N)]
+
 graph = []
 for _ in range(N) :
     graph.append(list(input().rstrip()))
-
+    
 queue = deque()
 temp = [0]
 for i in range(N) :
     for j in range(M) :
         if graph[i][j] == 'o' :
             temp.append((j,i))
+
+cnt,(tx1,ty1),(tx2,ty2) = temp
+visited[ty1][tx1][ty2][tx2] = True
+
 queue.append(temp)
 
 # 움직인 횟수, 동전1 위치, 동전2 위치
@@ -46,9 +52,9 @@ while queue :
                 dy2,dx2 = y2,x2
             
             # 이동했는데 변화가 없는 경우 무시
-            if dy1 == y1 and dx1 == x1 and dy2 == y2 and dx2 == x2 :
+            if visited[dy1][dx1][dy2][dx2] :
                 continue
             
             queue.append([cnt+1,(dx1,dy1),(dx2,dy2)])
-
+            visited[dy1][dx1][dy2][dx2] = True
 print(-1)
