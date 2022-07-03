@@ -16,7 +16,6 @@ def recursion(w,h) :
         return DP[w][h]
 
 DP = [[0] * 31 for _ in range(31)]
-
 DP[1][1] = 1
 for i in range(31) :
     DP[0][i] = 1
