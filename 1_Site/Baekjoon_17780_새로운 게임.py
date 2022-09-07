@@ -69,11 +69,6 @@ for cnt in range(1000) :
             players[y][x].reverse()
             moveAll(x,y,dx,dy)
         
-        # 테스트
-        for p in players :
-            print(p)
-        print()
-        
         # 이동 후 말이 4개 이상인지 확인
         if len(players[dy][dx]) >= 4 :
             print(cnt+1)
