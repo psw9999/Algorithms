@@ -80,11 +80,6 @@ for paper in papers :
         
         if isCompleted :
             break
-
-# for g in graph :
-#     print(' '.join(map(str, g)))
-# print()
-
 print(result)
             
             
