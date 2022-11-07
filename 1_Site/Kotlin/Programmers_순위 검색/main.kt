@@ -14,6 +14,7 @@ class Solution {
     }
 
     fun dfs(key : String, depth : Int, info : List<String>) {
+        queryMap
         if (depth == 4) {
             if (queryMap.contains(key)) queryMap[key]?.add(info[depth].toInt())
             else queryMap[key] = mutableListOf<Int>(info[depth].toInt())
