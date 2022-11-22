@@ -49,4 +49,3 @@ popStack(positive)
 print(result)
 
             
-            
